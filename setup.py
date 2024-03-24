@@ -21,7 +21,7 @@ with open('README.md', encoding='utf8') as f:
 # noinspection SpellCheckingInspection
 setup(
     name='pilk-nogil',
-    version='0.3.1',
+    version='0.3.2',
     description='python silk voice library',
     long_description=long_description,
     long_description_content_type='text/markdown',
