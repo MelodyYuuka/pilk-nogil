@@ -10,7 +10,7 @@ pilk: python + silk
 
 ## 安装
 
-[![python version](https://img.shields.io/pypi/pyversions/pilk)](https://pypi.org/project/pilk/)  [![downloads](https://static.pepy.tech/personalized-badge/pilk?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pilk)
+[![python version](https://img.shields.io/pypi/pyversions/pilk-nogil)](https://pypi.org/project/pilk-nogil/)  [![downloads](https://static.pepy.tech/personalized-badge/pilk-nogil?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pilk-nogil)
 
 ```bash
 pip install pilk-nogil
