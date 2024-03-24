@@ -11,7 +11,8 @@ sources.append('src/pilkmodule.c')
 pilkmodule = Extension(
     name='pilk_nogil._pilk',
     sources=sources,
-    include_dirs=[SKP_SILK_SRC, 'src/interface', 'src/silk']
+    include_dirs=[SKP_SILK_SRC, 'src/interface', 'src/silk'],
+    extra_compile_args=["-O3"]
 )
 
 with open('README.md', encoding='utf8') as f:
@@ -20,7 +21,7 @@ with open('README.md', encoding='utf8') as f:
 # noinspection SpellCheckingInspection
 setup(
     name='pilk-nogil',
-    version='0.3.0',
+    version='0.3.1',
     description='python silk voice library',
     long_description=long_description,
     long_description_content_type='text/markdown',
