@@ -70,6 +70,7 @@ jobs:
         path: dist
         merge-multiple: true
     - name: publish to Test PyPI
+      if: github.event_name == 'release' && github.event.action == 'published'
       uses: pypa/gh-action-pypi-publish@v1.8.12
       with:
         repository-url: https://test.pypi.org/legacy/
