@@ -3,25 +3,25 @@ import wave
 
 from .SilkDecoder import SilkDecoder
 from .SilkEncoder import SilkEncoder
-from ._pilk import *
+from ._pilk import encode, decode  # type: ignore
 
-__title__ = 'pilk'
-__description__ = 'python silk codec binding'
-__url__ = 'https://github.com/foyoux/pilk'
-__version__ = '0.2.4'
+__title__ = "pilk"
+__description__ = "python silk codec binding"
+__url__ = "https://github.com/foyoux/pilk"
+__version__ = "0.2.4"
 # noinspection SpellCheckingInspection
-__author__ = 'foyou'
-__author_email__ = 'yimi.0822@qq.com'
-__license__ = ' GPL-3.0'
-__copyright__ = f'Copyright 2022~2023 {__author__}'
-__ide__ = 'PyCharm - https://www.jetbrains.com/pycharm/'
+__author__ = "foyou"
+__author_email__ = "yimi.0822@qq.com"
+__license__ = " GPL-3.0"
+__copyright__ = f"Copyright 2022~2023 {__author__}"
+__ide__ = "PyCharm - https://www.jetbrains.com/pycharm/"
 
 
 def get_duration(silk_path: str, frame_ms: int = 20) -> int:
     """获取 silk 文件持续时间，单位：ms"""
-    with open(silk_path, 'rb') as silk:
+    with open(silk_path, "rb") as silk:
         tencent = False
-        if silk.read(1) == b'\x02':
+        if silk.read(1) == b"\x02":
             tencent = True
         silk.seek(0)
         if tencent:
@@ -41,10 +41,10 @@ def get_duration(silk_path: str, frame_ms: int = 20) -> int:
 
 def silk_to_wav(silk: str, wav: str, rate: int = 24000):
     """silk 文件转 wav"""
-    pcm_path = tempfile.mktemp(suffix='.pcm')
+    pcm_path = tempfile.mktemp(suffix=".pcm")
     decode(silk, pcm_path, pcm_rate=rate)
-    with open(pcm_path, 'rb') as pcm:
-        with wave.open(wav, 'wb') as f:
+    with open(pcm_path, "rb") as pcm:
+        with wave.open(wav, "wb") as f:
             # noinspection PyTypeChecker
-            f.setparams((1, 2, rate, 0, 'NONE', 'NONE'))
+            f.setparams((1, 2, rate, 0, "NONE", "NONE"))
             f.writeframes(pcm.read())

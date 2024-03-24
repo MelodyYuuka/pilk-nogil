@@ -10,28 +10,28 @@
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Define codec specific settings should be moved to h file */
-#define DECODE_MAX_BYTES_PER_FRAME     1024
-#define MAX_INPUT_FRAMES        5
-#define MAX_FRAME_LENGTH        480
-#define FRAME_LENGTH_MS         20
-#define MAX_API_FS_KHZ          48
-#define MAX_LBRR_DELAY          2
+#define DECODE_MAX_BYTES_PER_FRAME 1024
+#define MAX_INPUT_FRAMES 5
+#define MAX_FRAME_LENGTH 480
+#define FRAME_LENGTH_MS 20
+#define MAX_API_FS_KHZ 48
+#define MAX_LBRR_DELAY 2
 
 /* Seed for the random number generator, which is used for simulating packet loss */
 static SKP_int32 rand_seed = 1;
 
 // 声明自定义错误
-extern PyObject *PilkError;
+extern PyObject* PilkError;
 
-PyObject *
-silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args) {
+PyObject*
+silk_decode(PyObject* Py_UNUSED(module), PyObject* args, PyObject* keyword_args) {
 
-    static char *kwlist[] = {
-            "silk",
-            "pcm",
-            "pcm_rate",
-            "packet_loss",
-            NULL
+    static char* kwlist[] = {
+        "silk",
+        "pcm",
+        "pcm_rate",
+        "packet_loss",
+        NULL
     };
 
     double filetime;
@@ -45,23 +45,22 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
     SKP_int16 nBytesFEC;
     SKP_int16 nBytesPerPacket[MAX_LBRR_DELAY + 1], totBytes;
     SKP_int16 out[((FRAME_LENGTH_MS * MAX_API_FS_KHZ) << 1) * MAX_INPUT_FRAMES], *outPtr;
-    PyObject *bitInFileName;
-    PyObject *speechOutFileName;
+    PyObject* bitInFileName;
+    PyObject* speechOutFileName;
     FILE *bitInFile, *speechOutFile;
     SKP_int32 packetSize_ms = 0, API_Fs_Hz = 0;
     SKP_int32 decSizeBytes;
-    void *psDec;
+    void* psDec;
     SKP_float loss_prob;
     SKP_int32 frames, lost;
     SKP_SILK_SDK_DecControlStruct DecControl;
-
 
     /* default settings */
     loss_prob = 0.0f;
 
     /* get arguments */
     if (!PyArg_ParseTupleAndKeywords(args, keyword_args, "UU|ii", kwlist,
-                                     &bitInFileName, &speechOutFileName, &API_Fs_Hz, &lost)) {
+            &bitInFileName, &speechOutFileName, &API_Fs_Hz, &lost)) {
         // 返回 null，无需手动设置错误，PyArg_ParseTupleAndKeywords 会自动处理
         return NULL;
     }
@@ -83,7 +82,6 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
             header_buf[strlen("!SILK_V3")] = '\0'; /* Terminate with a null character */
             if (strcmp(header_buf, "!SILK_V3") != 0) {
                 /* Non-equal strings */
-
                 return PyErr_Format(PilkError, "Error: Wrong Header %s", header_buf);
             }
         } else {
@@ -91,23 +89,25 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
             header_buf[strlen("#!SILK_V3")] = '\0'; /* Terminate with a null character */
             if (strcmp(header_buf, "#!SILK_V3") != 0) {
                 /* Non-equal strings */
-
                 return PyErr_Format(PilkError, "Error: Wrong Header %s", header_buf);
             }
         }
     }
 
-//    speechOutFile = fopen(speechOutFileName, "wb");
+    //    speechOutFile = fopen(speechOutFileName, "wb");
     speechOutFile = _Py_fopen_obj(speechOutFileName, "wb");
     if (speechOutFile == NULL) {
 
         return PyErr_Format(PyExc_OSError, "Error: could not open output file %s", speechOutFileName);
     }
 
-    /* Set the samplingrate that is requested for the output */
-    if (API_Fs_Hz == 0) {
+    Py_BEGIN_ALLOW_THREADS
+
+        /* Set the samplingrate that is requested for the output */
+        if (API_Fs_Hz == 0) {
         DecControl.API_sampleRate = 24000;
-    } else {
+    }
+    else {
         DecControl.API_sampleRate = API_Fs_Hz;
     }
 
@@ -130,12 +130,12 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
         /* Read payload size */
         counter = fread(&nBytes, sizeof(SKP_int16), 1, bitInFile);
 #ifdef _SYSTEM_IS_BIG_ENDIAN
-        swap_endian( &nBytes, 1 );
+        swap_endian(&nBytes, 1);
 #endif
         /* Read payload */
         counter = fread(payloadEnd, sizeof(SKP_uint8), nBytes, bitInFile);
 
-        if ((SKP_int16) counter < nBytes) {
+        if ((SKP_int16)counter < nBytes) {
             break;
         }
         nBytesPerPacket[i] = nBytes;
@@ -147,7 +147,7 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
         /* Read payload size */
         counter = fread(&nBytes, sizeof(SKP_int16), 1, bitInFile);
 #ifdef _SYSTEM_IS_BIG_ENDIAN
-        swap_endian( &nBytes, 1 );
+        swap_endian(&nBytes, 1);
 #endif
         if (nBytes < 0 || counter < 1) {
             break;
@@ -155,13 +155,13 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
 
         /* Read payload */
         counter = fread(payloadEnd, sizeof(SKP_uint8), nBytes, bitInFile);
-        if ((SKP_int16) counter < nBytes) {
+        if ((SKP_int16)counter < nBytes) {
             break;
         }
 
         /* Simulate losses */
         rand_seed = SKP_RAND(rand_seed);
-        if ((((float) ((rand_seed >> 16) + (1 << 15))) / 65535.0f >= (loss_prob / 100.0f)) && (counter > 0)) {
+        if ((((float)((rand_seed >> 16) + (1 << 15))) / 65535.0f >= (loss_prob / 100.0f)) && (counter > 0)) {
             nBytesPerPacket[MAX_LBRR_DELAY] = nBytes;
             payloadEnd += nBytes;
         } else {
@@ -229,7 +229,7 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
 
         /* Write output to file */
 #ifdef _SYSTEM_IS_BIG_ENDIAN
-        swap_endian( out, tot_len );
+        swap_endian(out, tot_len);
 #endif
         fwrite(out, sizeof(SKP_int16), tot_len, speechOutFile);
 
@@ -240,13 +240,11 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
         }
         /* Check if the received totBytes is valid */
         if (totBytes < 0 || totBytes > sizeof(payload)) {
-
-            return PyErr_Format(PilkError, "Packets decoded: %d", totPackets);
+            Py_BLOCK_THREADS return PyErr_Format(PilkError, "Packets decoded: %d", totPackets);
         }
         SKP_memmove(payload, &payload[nBytesPerPacket[0]], totBytes * sizeof(SKP_uint8));
         payloadEnd -= nBytesPerPacket[0];
         SKP_memmove(nBytesPerPacket, &nBytesPerPacket[1], MAX_LBRR_DELAY * sizeof(SKP_int16));
-
     }
 
     /* Empty the recieve buffer */
@@ -316,7 +314,7 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
 
         /* Write output to file */
 #ifdef _SYSTEM_IS_BIG_ENDIAN
-        swap_endian( out, tot_len );
+        swap_endian(out, tot_len);
 #endif
         fwrite(out, sizeof(SKP_int16), tot_len, speechOutFile);
 
@@ -328,14 +326,12 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
 
         /* Check if the received totBytes is valid */
         if (totBytes < 0 || totBytes > sizeof(payload)) {
-
-            return PyErr_Format(PilkError, "Packets decoded: %d", totPackets);
+            Py_BLOCK_THREADS return PyErr_Format(PilkError, "Packets decoded: %d", totPackets);
         }
 
         SKP_memmove(payload, &payload[nBytesPerPacket[0]], totBytes * sizeof(SKP_uint8));
         payloadEnd -= nBytesPerPacket[0];
         SKP_memmove(nBytesPerPacket, &nBytesPerPacket[1], MAX_LBRR_DELAY * sizeof(SKP_int16));
-
     }
 
     /* Free decoder */
@@ -347,5 +343,7 @@ silk_decode(PyObject *Py_UNUSED(module), PyObject *args, PyObject *keyword_args)
 
     filetime = totPackets * 1e-3 * packetSize_ms;
 
-    return PyLong_FromDouble(filetime);
+    Py_END_ALLOW_THREADS
+
+        return PyLong_FromDouble(filetime);
 }

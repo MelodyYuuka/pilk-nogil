@@ -1,7 +1,7 @@
 """silk 编码器"""
 from typing_extensions import Literal
 
-from ._pilk import encode
+from ._pilk import encode  # type: ignore
 
 PCM_RATE = Literal[
     # pcm data rate 可选值
@@ -36,15 +36,15 @@ class SilkEncoder:
     """..."""
 
     def __init__(
-            self,
-            pcm_rate: PCM_RATE = 24000,
-            silk_rate: SILK_RATE = None,
-            max_rate: MAX_RATE = 24000,
-            complexity: COMPLEXITY = 2,
-            packet_size: PACKET_SIZE = 20,
-            packet_loss: PACKET_LOSS = 0,
-            use_in_band_fec: bool = False,
-            use_dtx: bool = False,
+        self,
+        pcm_rate: PCM_RATE = 24000,
+        silk_rate: SILK_RATE = None,
+        max_rate: MAX_RATE = 24000,
+        complexity: COMPLEXITY = 2,
+        packet_size: PACKET_SIZE = 20,
+        packet_loss: PACKET_LOSS = 0,
+        use_in_band_fec: bool = False,
+        use_dtx: bool = False,
     ):
         self.pcm_rate = pcm_rate
         self.silk_rate = silk_rate
@@ -57,7 +57,8 @@ class SilkEncoder:
 
     def encode(self, pcm: str, silk: str, tencent: bool = False) -> int:
         return encode(
-            pcm, silk,
+            pcm,
+            silk,
             self.pcm_rate,
             self.silk_rate,
             tencent,

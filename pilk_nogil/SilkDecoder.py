@@ -1,7 +1,7 @@
 """silk 解码"""
 from typing_extensions import Literal
 
-from ._pilk import decode
+from ._pilk import decode  # type: ignore
 
 PCM_RATE = Literal[
     # pcm data rate 可选值
@@ -20,7 +20,4 @@ class SilkDecoder:
         self.packet_loss = packet_loss
 
     def decode(self, silk: str, pcm: str) -> int:
-        return decode(
-            silk, pcm,
-            pcm_rate=self.pcm_rate, packet_loss=self.packet_loss
-        )
+        return decode(silk, pcm, pcm_rate=self.pcm_rate, packet_loss=self.packet_loss)

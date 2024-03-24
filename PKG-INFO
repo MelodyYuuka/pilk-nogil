@@ -1,6 +1,35 @@
-# pilk-nogil
+Metadata-Version: 2.1
+Name: pilk
+Version: 0.2.4
+Summary: python silk voice library
+Home-page: https://github.com/foyoux/pilk
+Download-URL: https://github.com/foyoux/pilk/releases
+Author: foyou
+Author-email: yimi.0822@qq.com
+Maintainer: foyou
+Maintainer-email: yimi.0822@qq.com
+Keywords: silk,voice,python,extension,wechat,qq,tencent,xposed,c/c++
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Natural Language :: Chinese (Simplified)
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: C
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Multimedia :: Sound/Audio
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
 
-fork from [foyoux/pilk](https://github.com/foyoux/pilk)，在编解码过程中释放了GIL，适合多线程处理
+# pilk
 
 python silk codec binding 支持微信语音编解码
 
@@ -13,7 +42,7 @@ pilk: python + silk
 [![python version](https://img.shields.io/pypi/pyversions/pilk)](https://pypi.org/project/pilk/)  [![downloads](https://static.pepy.tech/personalized-badge/pilk?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pilk)
 
 ```bash
-pip install pilk-nogil
+pip install pilk
 ```
 
 ## 介绍与说明
@@ -25,11 +54,11 @@ pip install pilk-nogil
 
 **Tencent** 系语音支持来自 [silk-v3-decoder](https://github.com/kn007/silk-v3-decoder)
 
-[Release](https://github.com/foyoux/pilk/releases/tag/v0.0.1)
+[Release ](https://github.com/foyoux/pilk/releases/tag/v0.0.1)
 中也包含 [silk-v3-decoder](https://github.com/kn007/silk-v3-decoder) 重编译的 **x64-win**
 版本，支持中文，[源代码](https://github.com/foyoux/silk-codec)
 
-### **SILK** 编码格式 和 **Tencent** 系语音的关系
+### **SILK** 编码格式 和 **Tencent** 系语音的关系：
 
 > 此处 **Tencent** 系语音，仅以微信语音为例
 
@@ -82,11 +111,9 @@ data**](https://en.wikipedia.org/wiki/Pulse-code_modulation) 完成的
 
 1. 音(视)频文件 ➜ PCM
    > 借助 ffmpeg，你当然需要先有 [ffmpeg](https://www.ffmpeg.org/download.html)
-
     ```bat
     ffmpeg -y -i <音(视)频输入文件> -vn -ar <采样率> -ac 1 -f s16le <PCM输出文件>
     ```
-
     1. `-y`: 可加可不加，表示 <PCM输出文件> 已存在时不询问，直接覆盖
     2. `-i`: 没啥好说的，固定的，后接 <音(视)频输入文件>
     3. `-vn`: 表示不处理视频数据，建议添加，虽然不加也不会处理视频数据（视频数据不存在转PCM的说法），但可能会打印警告
@@ -96,12 +123,11 @@ data**](https://en.wikipedia.org/wiki/Pulse-code_modulation) 完成的
     7. example1: `ffmpeg -y -i mv.mp4 -vn -ar 44100 -ac 1 -f s16le mv.pcm`
     8. example2: `ffmpeg -y -i music.mp3 -ar 44100 -ac 1 -f s16le music.pcm`
 
-2. PCM ➜ 音频文件
 
+2. PCM ➜ 音频文件
     ```bat
     ffmpeg -y -f s16le -i <PCM输入文件> -ar <采样率> -ac <声道数> <音频输出文件>
     ```
-
     1. `-f`: 这里必须为 `s16le`, 同样也是由 **SILK** 决定的
     2. `-ar`: 同上
     3. `-ac`: 含义同上，值随意
@@ -115,12 +141,12 @@ data**](https://en.wikipedia.org/wiki/Pulse-code_modulation) 完成的
 ### silk 编码
 
 ```python
-import pilk_nogil
+import pilk
 
 # pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
 # pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
 # pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
-duration = pilk_nogil.encode("test.pcm", "test.silk", pcm_rate=44100, tencent=True)
+duration = pilk.encode("test.pcm", "test.silk", pcm_rate=44100, tencent=True)
 
 print("语音时间为:", duration)
 ```
@@ -128,10 +154,10 @@ print("语音时间为:", duration)
 ### silk 解码
 
 ```python
-import pilk_nogil
+import pilk
 
 # pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
-duration = pilk_nogil.decode("test.silk", "test.pcm")
+duration = pilk.decode("test.silk", "test.pcm")
 
 print("语音时间为:", duration)
 ```
@@ -141,7 +167,7 @@ print("语音时间为:", duration)
 使用 [pudub](https://github.com/jiaaro/pydub) 依赖 [ffmpeg](https://www.ffmpeg.org/)
 
 ```python
-import os, pilk_nogil
+import os, pilk
 from pydub import AudioSegment
 
 
@@ -153,7 +179,7 @@ def convert_to_silk(media_path: str) -> str:
     silk_path = pcm_path + '.silk'
     pcm_path += '.pcm'
     media.export(pcm_path, 's16le', parameters=['-ar', str(media.frame_rate), '-ac', '1']).close()
-    pilk_nogil.encode(pcm_path, silk_path, pcm_rate=media.frame_rate, tencent=True)
+    pilk.encode(pcm_path, silk_path, pcm_rate=media.frame_rate, tencent=True)
     return silk_path
 ```
 
@@ -164,7 +190,7 @@ import os
 
 import av
 
-import pilk_nogil
+import pilk
 
 
 def to_pcm(in_path: str) -> tuple[str, int]:
@@ -193,7 +219,7 @@ def convert_to_silk(media_path: str) -> str:
     """任意媒体文件转 silk, 返回silk路径"""
     pcm_path, sample_rate = to_pcm(media_path)
     silk_path = os.path.splitext(pcm_path)[0] + '.silk'
-    pilk_nogil.encode(pcm_path, silk_path, pcm_rate=sample_rate, tencent=True)
+    pilk.encode(pcm_path, silk_path, pcm_rate=sample_rate, tencent=True)
     os.remove(pcm_path)
     return silk_path
 ```

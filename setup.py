@@ -9,7 +9,7 @@ sources.append('src/pilkmodule.c')
 
 # noinspection SpellCheckingInspection
 pilkmodule = Extension(
-    name='pilk._pilk',
+    name='pilk_nogil._pilk',
     sources=sources,
     include_dirs=[SKP_SILK_SRC, 'src/interface', 'src/silk']
 )
@@ -19,29 +19,32 @@ with open('README.md', encoding='utf8') as f:
 
 # noinspection SpellCheckingInspection
 setup(
-    name='pilk',
-    version='0.2.4',
+    name='pilk-nogil',
+    version='0.2.5',
     description='python silk voice library',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='foyou',
-    author_email='yimi.0822@qq.com',
-    maintainer='foyou',
-    maintainer_email='yimi.0822@qq.com',
-    url='https://github.com/foyoux/pilk',
-    download_url='https://github.com/foyoux/pilk/releases',
+    author='foyou + MelodyYuuka',
+    author_email='yimi.0822@qq.com + a876987@126.com',
+    maintainer='MelodyYuuka',
+    maintainer_email='a876987@126.com',
+    url='https://github.com/MelodyYuuka/pilk',
+    download_url='https://github.com/MelodyYuuka/releases',
     license_files=['LICENSE'],
     keywords=['silk', 'voice', 'python', 'extension', 'wechat', 'qq', 'tencent', 'xposed', 'c/c++'],
     python_requires='>=3.6',
     ext_modules=[pilkmodule],
     zip_safe=False,
-    packages=['pilk'],
+    packages=['pilk_nogil'],
     package_data={
-        'pilk': ['_pilk.pyi']
+        'pilk_nogil': ['_pilk.pyi']
     },
-    install_requires=['typing_extensions;python_version<"3.8"'],
+    install_requires=['typing_extensions'],
     classifiers=[
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Intended Audience :: End Users/Desktop',
+        'Natural Language :: Chinese (Simplified)',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
         'Programming Language :: C',
@@ -53,7 +56,6 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
         'Topic :: Multimedia :: Sound/Audio'
     ],
 )
