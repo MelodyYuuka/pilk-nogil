@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Python.h>
 
-#include "silk/constant.h"
+#include "silk/utils.h"
 #include "silk/pilk_encode.h"
 #include "silk/pilk_decode.h"
 

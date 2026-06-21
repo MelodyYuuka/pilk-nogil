@@ -1,7 +1,9 @@
 ---
-BasedOnStyle: WebKit
+BasedOnStyle: Google
 ---
 Language: Cpp
+AllowShortFunctionsOnASingleLine: false
+IndentWidth: 4
 BraceWrapping:
   AfterClass: false
   AfterControlStatement: false
@@ -14,4 +16,4 @@ BraceWrapping:
   BeforeCatch: false
   BeforeElse: false
   IndentBraces: false
-BreakBeforeBraces: Custom
+BreakBeforeBraces: Attach

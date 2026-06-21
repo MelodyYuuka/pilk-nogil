@@ -8,7 +8,6 @@
 
 #include "SKP_Silk_SDK_API.h"
 
-PyObject *
-silk_encode(PyObject *module, PyObject *args, PyObject *keyword_args);
+PyObject* silk_encode(PyObject* module, PyObject* args, PyObject* keyword_args);
 
-#endif //PILK_PILK_ENCODE_H
+#endif  // PILK_PILK_ENCODE_H

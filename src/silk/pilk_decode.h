@@ -8,7 +8,6 @@
 
 #include "SKP_Silk_SDK_API.h"
 
-PyObject *
-silk_decode(PyObject *module, PyObject *args, PyObject *keyword_args);
+PyObject* silk_decode(PyObject* module, PyObject* args, PyObject* keyword_args);
 
-#endif //PILK_PILK_DECODE_H
+#endif  // PILK_PILK_DECODE_H

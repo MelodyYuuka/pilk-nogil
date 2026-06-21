@@ -1,9 +1,10 @@
 from typing import Union, BinaryIO, overload
+import os
 
 @overload
 def encode(
-    pcm: Union[str, bytes, bytearray, BinaryIO],
-    silk: Union[str, BinaryIO],
+    pcm: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
+    silk: Union[str, os.PathLike, BinaryIO],
     pcm_rate: int = 24000,
     silk_rate: int = None,
     tencent: bool = False,
@@ -17,7 +18,7 @@ def encode(
 
 @overload
 def encode(
-    pcm: Union[str, bytes, bytearray, BinaryIO],
+    pcm: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
     silk: None,
     pcm_rate: int = 24000,
     silk_rate: int = None,
@@ -31,8 +32,8 @@ def encode(
 ) -> bytes: ...
 
 def encode(
-    pcm: Union[str, bytes, bytearray, BinaryIO],
-    silk: Union[str, BinaryIO, None],
+    pcm: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
+    silk: Union[str, os.PathLike, BinaryIO, None],
     pcm_rate: int = 24000,
     silk_rate: int = None,
     tencent: bool = False,
@@ -45,8 +46,8 @@ def encode(
 ) -> Union[float, bytes]:
     """silk 编码
 
-    :param pcm: str | bytes | bytearray | BinaryIO: pcm 输入文件路径或 pcm 数据
-    :param silk: str | BinaryIO | None: 输出保存 silk 的文件路径或 BytesIO 对象，None 则返回 bytes
+    :param pcm: str | os.PathLike | bytes | bytearray | BinaryIO: pcm 输入文件路径或 pcm 数据
+    :param silk: str | os.PathLike | BinaryIO | None: 输出保存 silk 的文件路径或 BytesIO 对象，None 则返回 bytes
     :param pcm_rate: int(hz)[可选]: 输入 pcm 文件的 rate, 默认: 24000. 可选值为 [8000, 12000, 16000, 24000, 32000, 44100, 48000]
     :param silk_rate: int(8000~48000 hz)[可选]: 默认: 与 pcm_rate 一致,输出 silk 文件的 rate
     :param tencent: bool[可选]: 默认: False, 是否兼容腾讯系语音
@@ -61,29 +62,29 @@ def encode(
 
 @overload
 def decode(
-    silk: Union[str, bytes, bytearray, BinaryIO],
-    pcm: Union[str, BinaryIO],
+    silk: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
+    pcm: Union[str, os.PathLike, BinaryIO],
     pcm_rate: int = 24000,
     packet_loss: int = 0,
 ) -> float: ...
 
 @overload
 def decode(
-    silk: Union[str, bytes, bytearray, BinaryIO],
+    silk: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
     pcm: None,
     pcm_rate: int = 24000,
     packet_loss: int = 0,
 ) -> bytes: ...
 
 def decode(
-    silk: Union[str, bytes, bytearray, BinaryIO],
-    pcm: Union[str, BinaryIO, None],
+    silk: Union[str, os.PathLike, bytes, bytearray, BinaryIO],
+    pcm: Union[str, os.PathLike, BinaryIO, None],
     pcm_rate: int = 24000,
     packet_loss: int = 0,
 ) -> Union[float, bytes]:
     """silk 解码
 
-    :param silk: str | bytes | bytearray | BinaryIO: silk 输入文件路径或 silk 数据
+    :param silk: str | os.PathLike | bytes | bytearray | BinaryIO: silk 输入文件路径或 silk 数据
     :param pcm: str | BinaryIO | None: 输出保存 pcm 的文件路径或 BytesIO 对象，None 则返回 bytes
     :param pcm_rate: int(hz)[可选]: 输入 pcm 文件的 rate, 默认: 24000. 可选值为 [8000, 12000, 16000, 24000, 32000, 44100, 48000]
     :param packet_loss: Uplink loss estimate, in percent (0-100); default: 0
