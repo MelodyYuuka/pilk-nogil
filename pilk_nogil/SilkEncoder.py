@@ -1,4 +1,5 @@
 """silk 编码器"""
+from typing import Union, BinaryIO
 from typing_extensions import Literal
 
 from ._pilk import encode  # type: ignore
@@ -55,7 +56,14 @@ class SilkEncoder:
         self.use_in_band_fec = use_in_band_fec
         self.use_dtx = use_dtx
 
-    def encode(self, pcm: str, silk: str, tencent: bool = False) -> int:
+    def encode(self, pcm: Union[str, bytes, bytearray, BinaryIO], silk: Union[str, BinaryIO, None], tencent: bool = False) -> Union[float, bytes]:
+        """silk 编码
+
+        :param pcm: str | bytes | bytearray | BinaryIO: pcm 输入文件路径或 pcm 数据
+        :param silk: str | BinaryIO | None: 输出保存 silk 的文件路径或 BytesIO 对象，None 则返回 bytes
+        :param tencent: bool[可选]: 默认: False, 是否兼容腾讯系语音
+        :return: float | bytes: silk文件持续时间 或 silk 数据（当 silk=None 时）
+        """
         return encode(
             pcm,
             silk,

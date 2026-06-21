@@ -1,3 +1,41 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pilk-nogil"
+version = "0.4.0"
+description = "python silk voice library"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {file = "LICENSE"}
+authors = [
+    {name = "foyou", email = "yimi.0822@qq.com"},
+    {name = "MelodyYuuka", email = "melody@yunmengdu.cn"}
+]
+maintainers = [
+    {name = "MelodyYuuka", email = "melody@yunmengdu.cn"}
+]
+keywords = ["silk", "voice", "python", "extension", "wechat", "qq", "tencent", "xposed", "c/c++"]
+dependencies = [
+    "typing_extensions"
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Intended Audience :: End Users/Desktop',
+    'Natural Language :: Chinese (Simplified)',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Programming Language :: C',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Topic :: Multimedia :: Sound/Audio'
+]
+
+[tool.setuptools]
+packages = ["pilk_nogil"]
+zip-safe = false
+
+[tool.setuptools.package-data]
+pilk_nogil = ["_pilk.pyi"]

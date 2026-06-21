@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Python.h>
 
+#include "silk/constant.h"
 #include "silk/pilk_encode.h"
 #include "silk/pilk_decode.h"
 
@@ -74,6 +75,8 @@ PyInit__pilk(void) {
     m = PyModule_Create(&moduleDef);
     if (m == NULL)
         return NULL;
+
+    init_constant();
 
     PilkError = PyErr_NewException("pilk.error", NULL, NULL);
     Py_XINCREF(PilkError);
