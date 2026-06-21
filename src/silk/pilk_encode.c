@@ -169,7 +169,7 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
     silk_to_bytesio = 1;
     silk_to_memory = 1;
     silk_bytesio_obj = silk_obj;
-    /* Estimate initial capacity: SILK compress ~12:1 from 16-bit PCM */
+    /* Estimate initial capacity: SILK compress 10:1~15:1 from 16-bit PCM */
     Py_ssize_t estimated_size = pcm_size > 0 ? (pcm_size / 12) : 65536;
     if (estimated_size < 4096) estimated_size = 4096;
     if (memory_buffer_init(&silk_buf, estimated_size) < 0) {
@@ -180,8 +180,8 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
   } else if (silk_obj == Py_None) {
     /* Return bytes mode */
     silk_to_memory = 1;
-    /* Estimate initial capacity: SILK compress ~12:1 from 16-bit PCM */
-    Py_ssize_t estimated_size = pcm_size > 0 ? (pcm_size / 12) : 65536;
+    /* Estimate initial capacity: SILK compress 10:1~15:1 from 16-bit PCM */
+    Py_ssize_t estimated_size = pcm_size > 0 ? (pcm_size / 10) : 65536;
     if (estimated_size < 4096) estimated_size = 4096;
     if (memory_buffer_init(&silk_buf, estimated_size) < 0) {
       if (pcm_read_result) Py_DECREF(pcm_read_result);

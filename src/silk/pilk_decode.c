@@ -192,7 +192,7 @@ PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
     pcm_to_memory = 1;
     pcm_bytesio_obj = pcm_obj;
     /* Estimate initial capacity: PCM is ~12x larger than SILK */
-    Py_ssize_t estimated_size = silk_size > 0 ? (silk_size * 12) : 65536;
+    Py_ssize_t estimated_size = silk_size > 0 ? (silk_size * 15) : 65536;
     if (estimated_size < 4096) estimated_size = 4096;
     if (estimated_size > 10 * 1024 * 1024)
       estimated_size = 10 * 1024 * 1024; /* Max 10MB */
@@ -571,18 +571,11 @@ PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
   /* Handle output */
   if (pcm_to_bytesio) {
     /* Write to BytesIO */
-    PyObject* bytes_obj = memory_buffer_to_bytes(&pcm_buf);
-    memory_buffer_free(&pcm_buf);
-    if (bytes_obj == NULL) {
+    bool write_result =
+        memory_buffer_append_to_bytesio(pcm_bytesio_obj, &pcm_buf);
+    if (write_result == false) {
       return NULL;
     }
-    PyObject* write_result =
-        PyObject_CallMethodOneArg(pcm_bytesio_obj, ObjHandle_write, bytes_obj);
-    Py_DECREF(bytes_obj);
-    if (write_result == NULL) {
-      return NULL;
-    }
-    Py_DECREF(write_result);
     return PyLong_FromDouble(filetime);
   } else if (pcm_to_memory) {
     /* Return bytes */
