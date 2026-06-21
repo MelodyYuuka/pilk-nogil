@@ -39,7 +39,7 @@ class SilkEncoder:
     def __init__(
         self,
         pcm_rate: PCM_RATE = 24000,
-        silk_rate: SILK_RATE = None,
+        silk_rate: SILK_RATE = -1,
         max_rate: MAX_RATE = 24000,
         complexity: COMPLEXITY = 2,
         packet_size: PACKET_SIZE = 20,

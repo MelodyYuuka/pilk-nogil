@@ -99,7 +99,7 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
 
   /*解析参数*/
   if (!PyArg_ParseTupleAndKeywords(
-          args, keyword_args, "OO|ipiiiipp", kwlist, &pcm_obj, &silk_obj,
+          args, keyword_args, "OO|iipiiiipp", kwlist, &pcm_obj, &silk_obj,
           &API_fs_Hz, &targetRate_bps, &tencent, &max_internal_fs_Hz,
           &complexity_mode, &packetSize_ms, &packetLoss_perc,
           &INBandFEC_enabled, &DTX_enabled)) {
