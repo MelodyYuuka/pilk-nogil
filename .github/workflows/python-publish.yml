@@ -17,7 +17,7 @@ on:
 
 permissions:
   contents: read
-  
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -26,22 +26,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest, ubuntu-24.04-arm]
     steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: "recursive"
 
-    - uses: actions/checkout@v7
-      with:
-        submodules: 'recursive'
+      - name: build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+        env:
+          CIBW_BUILD_FRONTEND: build
+          CIBW_ENABLE: "pypy graalpy"
+          CIBW_BUILD: "*" # 按照这里的设置，所有允许的python版本都要执行64位编译
 
-    - name: build wheels
-      uses: pypa/cibuildwheel@v4.1.0
-      env:
-        CIBW_BUILD_FRONTEND: build
-        CIBW_ENABLE: "pypy graalpy"
-        CIBW_BUILD: "*"  # 按照这里的设置，所有允许的python版本都要执行64位编译
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
-        path: ./wheelhouse/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
@@ -57,27 +56,37 @@ jobs:
           name: cibw-sdist
           path: dist/*.tar.gz
 
-  upload:
+  upload-testpypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
     - uses: actions/download-artifact@v4
       with:
-        # unpacks all CIBW artifacts into dist/
         pattern: cibw-*
         path: dist
         merge-multiple: true
-    - name: publish to Test PyPI
-      if: github.event_name == 'release' && github.event.action == 'published'
-      uses: pypa/gh-action-pypi-publish@v1.14.0
+    - uses: pypa/gh-action-pypi-publish@v1.14.0
       with:
         repository-url: https://test.pypi.org/legacy/
         packages-dir: dist/
-    - name: publish to PYPI
-      if: github.event_name == 'release' && github.event.action == 'published'
-      uses: pypa/gh-action-pypi-publish@v1.14.0
+
+  upload-pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: cibw-*
+        path: dist
+        merge-multiple: true
+    - uses: pypa/gh-action-pypi-publish@v1.14.0
       with:
         packages-dir: dist/
