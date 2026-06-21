@@ -36,7 +36,7 @@ jobs:
       env:
         CIBW_BUILD_FRONTEND: build
         CIBW_ENABLE: "pypy graalpy"
-        CIBW_BUILD: "*-win32 *-*linux_i686 pp* gp*"  # 按照这里的设置，所有允许的python版本都要执行64位编译
+        CIBW_BUILD: "*"  # 按照这里的设置，所有允许的python版本都要执行64位编译
 
     - uses: actions/upload-artifact@v4
       with:
