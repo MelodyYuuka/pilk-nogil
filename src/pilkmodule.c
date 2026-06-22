@@ -59,32 +59,43 @@ static PyMethodDef PilkMethods[] = {
         {NULL, NULL, 0, NULL}
 };
 
+// 多阶段初始化
+static int
+_exec_module(PyObject *m) {
+    init_constant();
+
+    PilkError = PyErr_NewException("pilk.error", NULL, NULL);
+    if (PilkError == NULL)
+        return -1;
+    Py_INCREF(PilkError);
+    if (PyModule_AddObject(m, "error", PilkError) < 0) {
+        Py_DECREF(PilkError);
+        Py_CLEAR(PilkError);
+        return -1;
+    }
+    return 0;
+}
+
+// 模块 slot 表
+static PyModuleDef_Slot _module_slots[] = {
+        {Py_mod_exec, (void *) _exec_module},
+#ifdef Py_mod_gil
+        {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+#endif
+        {0, NULL}
+};
+
 // 模块定义
 static struct PyModuleDef moduleDef = {
         PyModuleDef_HEAD_INIT,
         "_pilk",
         "python silk library",
-        -1,
-        PilkMethods
+        0,
+        PilkMethods,
+        _module_slots
 };
 
 PyMODINIT_FUNC
 PyInit__pilk(void) {
-    PyObject *m;
-
-    m = PyModule_Create(&moduleDef);
-    if (m == NULL)
-        return NULL;
-
-    init_constant();
-
-    PilkError = PyErr_NewException("pilk.error", NULL, NULL);
-    Py_XINCREF(PilkError);
-    if (PyModule_AddObject(m, "error", PilkError) < 0) {
-        Py_XDECREF(PilkError);
-        Py_CLEAR(PilkError);
-        Py_DECREF(m);
-        return NULL;
-    }
-    return m;
+    return PyModuleDef_Init(&moduleDef);
 }

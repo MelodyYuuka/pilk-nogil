@@ -8,21 +8,26 @@ version = "0.4.1"
 description = "python silk voice library"
 readme = "README.md"
 requires-python = ">=3.6"
-license = {file = "LICENSE"}
+license = "GPL-3.0"
 authors = [
-    {name = "foyou", email = "yimi.0822@qq.com"},
-    {name = "MelodyYuuka", email = "melody@yunmengdu.cn"}
+    { name = "foyou", email = "yimi.0822@qq.com" },
+    { name = "MelodyYuuka", email = "melody@yunmengdu.cn" },
 ]
-maintainers = [
-    {name = "MelodyYuuka", email = "melody@yunmengdu.cn"}
+maintainers = [{ name = "MelodyYuuka", email = "melody@yunmengdu.cn" }]
+keywords = [
+    "silk",
+    "voice",
+    "python",
+    "extension",
+    "wechat",
+    "qq",
+    "tencent",
+    "xposed",
+    "c/c++",
 ]
-keywords = ["silk", "voice", "python", "extension", "wechat", "qq", "tencent", "xposed", "c/c++"]
-dependencies = [
-    "typing_extensions"
-]
+dependencies = ["typing_extensions"]
 classifiers = [
     'Development Status :: 4 - Beta',
-    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Intended Audience :: End Users/Desktop',
     'Natural Language :: Chinese (Simplified)',
     'Operating System :: Microsoft :: Windows',
@@ -30,7 +35,22 @@ classifiers = [
     'Programming Language :: C',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Topic :: Multimedia :: Sound/Audio'
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3.15',
+    "Programming Language :: Python :: Implementation",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: Implementation :: GraalPy",
+    "Programming Language :: Python :: Free Threading",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
+    'Topic :: Multimedia :: Sound/Audio',
 ]
 
 [tool.setuptools]
