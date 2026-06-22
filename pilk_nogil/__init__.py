@@ -9,7 +9,7 @@ from ._pilk import encode, decode  # type: ignore
 __title__ = "pilk_nogil"
 __description__ = "python silk codec binding"
 __url__ = "https://github.com/MelodyYuuka/pilk-nogil"
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 # noinspection SpellCheckingInspection
 __author__ = "MelodyYuuka"
 __author_email__ = "melody@yunmengdu.cn"
