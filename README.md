@@ -21,13 +21,7 @@ pip install pilk-nogil
 [**SILK**](https://en.wikipedia.org/wiki/SILK) 是一种语音编码格式，由 [**Skype**](https://en.wikipedia.org/wiki/Skype_Technologies)
 公司研发，网上可找到的最新版本是 2012 发布的。
 
-**SILK** 原始代码已上传到 [Release](https://github.com/foyoux/pilk/releases/tag/v0.0.1) , 包含规范文档
-
 **Tencent** 系语音支持来自 [silk-v3-decoder](https://github.com/kn007/silk-v3-decoder)
-
-[Release](https://github.com/foyoux/pilk/releases/tag/v0.0.1)
-中也包含 [silk-v3-decoder](https://github.com/kn007/silk-v3-decoder) 重编译的 **x64-win**
-版本，支持中文，[源代码](https://github.com/foyoux/silk-codec)
 
 ### **SILK** 编码格式 和 **Tencent** 系语音的关系
 
@@ -44,29 +38,35 @@ pip install pilk-nogil
 
 据此可写出获取 **语音文件** 持续时间(duration) 的函数（此函数 **pilk** 中已包含）
 
+> 从 v0.4.0 起，`get_duration()` 支持传入 `str | bytes | bytearray | BinaryIO`
+
 ```python
-def get_duration(silk_path: str, frame_ms: int = 20) -> int:
+def get_duration(silk_path: Union[str, bytes, bytearray, BinaryIO], frame_ms: int = 20) -> int:
     """获取 silk 文件持续时间，单位：ms"""
-    with open(silk_path, 'rb') as silk:
-        tencent = False
-        if silk.read(1) == b'\x02':
-            tencent = True
-        silk.seek(0)
-        if tencent:
-            silk.seek(10)
-        else:
-            silk.seek(9)
-        i = 0
-        while True:
-            size = silk.read(2)
-            if len(size) != 2:
-                break
-            size = size[0] + size[1] << 8
-            if not tencent and size == 0xffff:
-                break
-            i += 1
-            silk.seek(silk.tell() + size)
-        return i * frame_ms
+    if isinstance(silk_path, (bytes, bytearray)):
+        silk_data = silk_path
+    elif isinstance(silk_path, str):
+        with open(silk_path, "rb") as f:
+            silk_data = f.read()
+    elif hasattr(silk_path, "read"):
+        silk_data = silk_path.read()
+    else:
+        raise TypeError("silk_path must be str, bytes, bytearray, or file-like object")
+
+    pos = 0
+    if len(silk_data) > 0 and silk_data[0:1] == b"\x02":
+        pos = 10  # len("\x02#!SILK_V3")
+    else:
+        pos = 9  # len("#!SILK_V3")
+
+    i = 0
+    while pos + 2 <= len(silk_data):
+        size = silk_data[pos] + silk_data[pos + 1] * 16
+        pos += 2 + size
+        if pos > len(silk_data):
+            break
+        i += 1
+    return i * frame_ms
 ```
 
 根据 **SILK** 格式规范，**frame_ms** 可为 `20, 40, 60, 80, 100`
@@ -118,8 +118,6 @@ data**](https://en.wikipedia.org/wiki/Pulse-code_modulation) 完成的
 import pilk_nogil
 
 # pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
-# pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
-# pcm_rate 参数必须和 使用 ffmpeg 转 音频 到 PCM 文件时，使用的 `-ar` 参数一致
 duration = pilk_nogil.encode("test.pcm", "test.silk", pcm_rate=44100, tencent=True)
 
 print("语音时间为:", duration)
@@ -135,6 +133,38 @@ duration = pilk_nogil.decode("test.silk", "test.pcm")
 
 print("语音时间为:", duration)
 ```
+
+### 内存编解码（v0.4.0+）
+
+从 v0.4.0 起，所有编解码 API 支持直接传入内存数据，无需文件路径：
+
+```python
+import pilk_nogil
+
+# 读取 silk 文件到内存
+with open("test.silk", "rb") as f:
+    silk_data = f.read()
+
+# 内存中解码为 pcm bytes
+pcm_data = pilk_nogil.decode(silk_data, None, pcm_rate=24000)
+
+# 内存中编码 pcm 为 silk bytes
+with open("test.pcm", "rb") as f:
+    pcm_data = f.read()
+silk_data = pilk_nogil.encode(pcm_data, None, pcm_rate=24000, tencent=True)
+
+# silk 转 wav bytes
+wav_data = pilk_nogil.silk_to_wav(silk_data, None, rate=24000)
+
+# 获取内存中 silk 数据的时长
+duration = pilk_nogil.get_duration(silk_data)
+```
+
+支持的参数类型：
+
+- 文件路径：`str`
+- 内存数据：`bytes | bytearray`
+- 文件对象：`BinaryIO`（如 `io.BytesIO`）
 
 ## 使用 Python 转任意媒体文件到 SILK
 
