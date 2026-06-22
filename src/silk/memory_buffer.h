@@ -56,7 +56,8 @@ static inline PyObject* memory_buffer_to_bytes(MemoryBuffer* buf) {
 }
 
 static inline bool memory_buffer_append_to_bytesio(PyObject* silk_bytesio_obj,
-                                                   MemoryBuffer* buf) {
+                                                   MemoryBuffer* buf,
+                                                   PyObject* write_method) {
     PyObject* mem_view =
         PyMemoryView_FromMemory((char*)buf->data, buf->size, PyBUF_READ);
     if (!mem_view) {
@@ -64,7 +65,7 @@ static inline bool memory_buffer_append_to_bytesio(PyObject* silk_bytesio_obj,
     }
 
     PyObject* res =
-        PyObject_CallMethodOneArg(silk_bytesio_obj, ObjHandle_write, mem_view);
+        PyObject_CallMethodOneArg(silk_bytesio_obj, write_method, mem_view);
 
     Py_DECREF(mem_view);
 

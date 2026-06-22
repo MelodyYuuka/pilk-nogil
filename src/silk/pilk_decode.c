@@ -32,8 +32,9 @@ static SKP_int32 rand_seed = 1;
 // Declare custom error
 extern PyObject* PilkError;
 
-PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
+PyObject* silk_decode(PyObject* module, PyObject* args,
                       PyObject* keyword_args) {
+  PilkState* state = pilk_get_state(module);
   static char* kwlist[] = {"silk", "pcm", "pcm_rate", "packet_loss", NULL};
 
   double filetime;
@@ -95,9 +96,9 @@ PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
     silk_from_memory = 1;
     silk_buffer = PyByteArray_AS_STRING(silk_obj);
     silk_size = PyByteArray_GET_SIZE(silk_obj);
-  } else if (PyObject_HasAttr(silk_obj, ObjHandle_read)) {
+  } else if (PyObject_HasAttr(silk_obj, state->ObjHandle_read)) {
     /* BytesIO mode: call read() to get bytes */
-    silk_read_result = PyObject_CallMethodNoArgs(silk_obj, ObjHandle_read);
+    silk_read_result = PyObject_CallMethodNoArgs(silk_obj, state->ObjHandle_read);
     if (silk_read_result == NULL) {
       return NULL;
     }
@@ -186,7 +187,7 @@ PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
       if (!silk_from_memory) fclose(bitInFile);
       return NULL;
     }
-  } else if (PyObject_HasAttr(pcm_obj, ObjHandle_write)) {
+  } else if (PyObject_HasAttr(pcm_obj, state->ObjHandle_write)) {
     /* BytesIO mode */
     pcm_to_bytesio = 1;
     pcm_to_memory = 1;
@@ -572,7 +573,7 @@ PyObject* silk_decode(PyObject* Py_UNUSED(module), PyObject* args,
   if (pcm_to_bytesio) {
     /* Write to BytesIO */
     bool write_result =
-        memory_buffer_append_to_bytesio(pcm_bytesio_obj, &pcm_buf);
+        memory_buffer_append_to_bytesio(pcm_bytesio_obj, &pcm_buf, state->ObjHandle_write);
     if (write_result == false) {
       return NULL;
     }

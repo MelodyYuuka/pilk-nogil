@@ -62,7 +62,8 @@ static PyMethodDef PilkMethods[] = {
 // 多阶段初始化
 static int
 _exec_module(PyObject *m) {
-    init_constant();
+    PilkState* state = pilk_get_state(m);
+    init_constant(state);
 
     PilkError = PyErr_NewException("pilk.error", NULL, NULL);
     if (PilkError == NULL)
@@ -90,7 +91,7 @@ static struct PyModuleDef moduleDef = {
         PyModuleDef_HEAD_INIT,
         "_pilk",
         "python silk library",
-        0,
+        sizeof(PilkState),
         PilkMethods,
         _module_slots
 };

@@ -47,8 +47,9 @@ void swap_endian(SKP_int16 vec[], /*  I/O array of */
 // Declare custom error
 extern PyObject* PilkError;
 
-PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
+PyObject* silk_encode(PyObject* module, PyObject* args,
                       PyObject* keyword_args) {
+  PilkState* state = pilk_get_state(module);
   SKP_assert(0);
   static char* kwlist[] = {
       "pcm",      "silk",       "pcm_rate",    "silk_rate",   "tencent",
@@ -134,9 +135,9 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
     pcm_from_memory = 1;
     pcm_buffer = PyByteArray_AS_STRING(pcm_obj);
     pcm_size = PyByteArray_GET_SIZE(pcm_obj);
-  } else if (PyObject_HasAttr(pcm_obj, ObjHandle_read)) {
+  } else if (PyObject_HasAttr(pcm_obj, state->ObjHandle_read)) {
     /* BytesIO mode: call read() to get bytes */
-    pcm_read_result = PyObject_CallMethodNoArgs(pcm_obj, ObjHandle_read);
+    pcm_read_result = PyObject_CallMethodNoArgs(pcm_obj, state->ObjHandle_read);
     if (pcm_read_result == NULL) {
       return NULL;
     }
@@ -164,7 +165,7 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
       if (!pcm_from_memory) fclose(speechInFile);
       return NULL;
     }
-  } else if (PyObject_HasAttr(silk_obj, ObjHandle_write)) {
+  } else if (PyObject_HasAttr(silk_obj, state->ObjHandle_write)) {
     /* BytesIO mode */
     silk_to_bytesio = 1;
     silk_to_memory = 1;
@@ -472,7 +473,7 @@ PyObject* silk_encode(PyObject* Py_UNUSED(module), PyObject* args,
   if (silk_to_bytesio) {
     /* Write to BytesIO */
     bool write_result =
-        memory_buffer_append_to_bytesio(silk_bytesio_obj, &silk_buf);
+        memory_buffer_append_to_bytesio(silk_bytesio_obj, &silk_buf, state->ObjHandle_write);
     if (write_result == false) {
       return NULL;
     }

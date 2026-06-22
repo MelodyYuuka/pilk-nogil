@@ -2,10 +2,17 @@
 
 #include <Python.h>
 
-extern PyObject* ObjHandle_write;
-extern PyObject* ObjHandle_read;
+// Per-module state
+typedef struct {
+    PyObject* ObjHandle_write;
+    PyObject* ObjHandle_read;
+} PilkState;
 
-void init_constant();
+void init_constant(PilkState* state);
+
+static inline PilkState* pilk_get_state(PyObject* module) {
+    return (PilkState*)PyModule_GetState(module);
+}
 
 static inline FILE* Utils_fopen(PyObject* path, const char* mode) {
     FILE* bitInFile = NULL;
